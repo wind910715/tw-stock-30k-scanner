@@ -2,10 +2,8 @@ name: Daily 1700 TW Stock 30K Scanner
 
 on:
   schedule:
-    # UTC 時間 08:55 相當於台灣時間 (UTC+8) 週一至週五下午 16:55 啟動
-    # 考量雲端排隊與抓資料約需 2~5 分鐘，手機會在 17:00 左右準時收到推播
     - cron: '55 8 * * 1-5'
-  workflow_dispatch: # 允許隨時手動點擊按鈕立即測試
+  workflow_dispatch:
 
 jobs:
   scan_stocks:
@@ -18,10 +16,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install yfinance pandas numpy requests
 
       - name: Run 30K Stock Scanner and Push to Telegram
         env:

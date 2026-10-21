@@ -1,0 +1,59 @@
+{
+  "active": {
+    "2633.TW": {
+      "code": "2633",
+      "name": "台灣高鐵",
+      "kind": "STOCK",
+      "entry": 26.3,
+      "last_price": 26.3,
+      "stop": 25.91,
+      "tp1": 27.22,
+      "tp2": 28.4,
+      "tp1_hit": false,
+      "remain_ratio": 1.0,
+      "capital": 200000,
+      "realized_pnl_ntd": 0,
+      "unrealized_ntd": 0,
+      "total_pnl_ntd": 0,
+      "total_pnl_pct": 0.0,
+      "time": "2026-10-21 18:05"
+    },
+    "4916.TW": {
+      "code": "4916",
+      "name": "事欣科",
+      "kind": "STOCK",
+      "entry": 104.0,
+      "last_price": 104.0,
+      "stop": 100.87,
+      "tp1": 109.63,
+      "tp2": 114.95,
+      "tp1_hit": false,
+      "remain_ratio": 1.0,
+      "capital": 200000,
+      "realized_pnl_ntd": 0,
+      "unrealized_ntd": 0,
+      "total_pnl_ntd": 0,
+      "total_pnl_pct": 0.0,
+      "time": "2026-10-21 18:05"
+    },
+    "00852L.TW": {
+      "code": "00852L",
+      "name": "國泰美國道瓊正2",
+      "kind": "ETF",
+      "entry": 34.52,
+      "last_price": 34.52,
+      "stop": 33.59,
+      "tp1": 36.19,
+      "tp2": 37.78,
+      "tp1_hit": false,
+      "remain_ratio": 1.0,
+      "capital": 200000,
+      "realized_pnl_ntd": 0,
+      "unrealized_ntd": 0,
+      "total_pnl_ntd": 0,
+      "total_pnl_pct": 0.0,
+      "time": "2026-10-21 18:05"
+    }
+  },
+  "closed_history": []
+}

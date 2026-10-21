@@ -1,20 +1,29 @@
-name: TW Stock 30K Intraday Monitor & 1700 EOD Scanner
+name: TW Stock 30K Intraday Monitor & 1700 EOD & Weekly Review
 
 on:
   schedule:
-    # 1. 盤中即時監控：UTC 00:25 = 台灣時間週一至週五早上 08:25 啟動，常駐監控至 13:40
+    # 1. 週一至週五 08:25 (台灣時間) 啟動盤中即時監控至 13:40
     - cron: '25 0 * * 1-5'
-    # 2. 盤後選股日報：UTC 08:55 = 台灣時間週一至週五下午 16:55 啟動，17:00 推播日報
+    # 2. 週一至週五 16:55 (台灣時間) 啟動 17:00 盤後選股與持倉損益日報
     - cron: '55 8 * * 1-5'
+    # 3. 每週五 17:55 (台灣時間) 啟動 18:00 當週進出績效總體檢週報
+    - cron: '55 9 * * 5'
   workflow_dispatch:
     inputs:
       run_mode:
-        description: '選擇執行模式 (eod = 立即跑盤後日報, intraday = 啟動盤中即時監控)'
+        description: '選擇執行模式 (eod = 17:00盤後日報, intraday = 盤中即時監控, weekly = 週五18:00績效週報)'
         required: true
         default: 'eod'
 
 permissions:
   contents: write
+
+concurrency:
+  group: stock-monitor-group
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   stock_agent:
@@ -39,18 +48,24 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             python scanner.py ${{ github.event.inputs.run_mode }}
-          elif [ "$(date -u +%H)" -lt "06" ]; then
+          elif [ "${{ github.event.schedule }}" = "25 0 * * 1-5" ]; then
             python scanner.py intraday
+          elif [ "${{ github.event.schedule }}" = "55 9 * * 5" ]; then
+            python scanner.py weekly
           else
             python scanner.py eod
           fi
 
-      - name: Save Active Positions to Repository
+      - name: Save Active Positions and Trade History Safely
         if: always()
         run: |
           if [ -f positions.json ]; then
             git config user.name "stock-monitor-bot"
             git config user.email "bot@users.noreply.github.com"
             git add positions.json
-            git diff --staged --quiet || (git pull --rebase && git commit -m "Update active positions" && git push)
+            if ! git diff --staged --quiet; then
+              git commit -m "Update portfolio state and trade history [skip ci]"
+              git pull --rebase -X theirs origin main || true
+              git push origin HEAD:main || true
+            fi
           fi

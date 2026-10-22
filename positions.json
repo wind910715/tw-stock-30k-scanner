@@ -215,6 +215,24 @@
       "total_pnl_ntd": -800,
       "total_pnl_pct": -0.4,
       "time": "2026-10-22 10:13"
+    },
+    "2105.TW": {
+      "code": "2105",
+      "name": "正新",
+      "kind": "STOCK",
+      "entry": 32.1,
+      "last_price": 32.1,
+      "stop": 31.62,
+      "tp1": 33.22,
+      "tp2": 34.67,
+      "tp1_hit": false,
+      "remain_ratio": 1.0,
+      "capital": 200000,
+      "realized_pnl_ntd": 0,
+      "unrealized_ntd": 0,
+      "total_pnl_ntd": 0,
+      "total_pnl_pct": 0.0,
+      "time": "2026-10-22 10:23"
     }
   },
   "closed_history": [

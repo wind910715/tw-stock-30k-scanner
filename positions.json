@@ -23,7 +23,7 @@
       "name": "國泰美國道瓊正2",
       "kind": "ETF",
       "entry": 34.52,
-      "last_price": 34.65,
+      "last_price": 34.66,
       "stop": 33.59,
       "tp1": 36.19,
       "tp2": 37.78,
@@ -31,9 +31,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": -47,
-      "total_pnl_ntd": -47,
-      "total_pnl_pct": -0.02,
+      "unrealized_ntd": 11,
+      "total_pnl_ntd": 11,
+      "total_pnl_pct": 0.01,
       "time": "2026-10-21 18:05"
     },
     "00680L.TW": {
@@ -53,24 +53,6 @@
       "total_pnl_ntd": 503,
       "total_pnl_pct": 0.25,
       "time": "2026-10-22 09:22"
-    },
-    "2542.TW": {
-      "code": "2542",
-      "name": "興富發",
-      "kind": "STOCK",
-      "entry": 40.35,
-      "last_price": 40.25,
-      "stop": 39.67,
-      "tp1": 41.76,
-      "tp2": 43.58,
-      "tp1_hit": false,
-      "remain_ratio": 1.0,
-      "capital": 200000,
-      "realized_pnl_ntd": 0,
-      "unrealized_ntd": -1296,
-      "total_pnl_ntd": -1296,
-      "total_pnl_pct": -0.65,
-      "time": "2026-10-22 09:29"
     },
     "3045.TW": {
       "code": "3045",
@@ -113,7 +95,7 @@
       "name": "大成鋼",
       "kind": "STOCK",
       "entry": 50.4,
-      "last_price": 50.7,
+      "last_price": 50.6,
       "stop": 49.64,
       "tp1": 52.16,
       "tp2": 54.43,
@@ -121,9 +103,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": 390,
-      "total_pnl_ntd": 390,
-      "total_pnl_pct": 0.19,
+      "unrealized_ntd": -6,
+      "total_pnl_ntd": -6,
+      "total_pnl_pct": -0.0,
       "time": "2026-10-22 09:53"
     },
     "2352.TW": {
@@ -131,7 +113,7 @@
       "name": "佳世達",
       "kind": "STOCK",
       "entry": 29.65,
-      "last_price": 29.45,
+      "last_price": 29.4,
       "stop": 29.0,
       "tp1": 30.82,
       "tp2": 32.02,
@@ -139,9 +121,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": -2149,
-      "total_pnl_ntd": -2149,
-      "total_pnl_pct": -1.07,
+      "unrealized_ntd": -2486,
+      "total_pnl_ntd": -2486,
+      "total_pnl_pct": -1.24,
       "time": "2026-10-22 09:56"
     },
     "00688L.TW": {
@@ -228,6 +210,19 @@
       "reason": "⚠️30K死叉破20MA清倉",
       "net_pnl_pct": -0.87,
       "net_pnl_ntd": -1735
+    },
+    {
+      "ticker": "2542.TW",
+      "code": "2542",
+      "name": "興富發",
+      "entry": 40.35,
+      "exit": 40.2,
+      "entry_time": "2026-10-22 09:29",
+      "exit_time": "2026-10-22 12:27",
+      "exit_date": "2026-10-22",
+      "reason": "⚠️30K死叉破20MA清倉",
+      "net_pnl_pct": -0.77,
+      "net_pnl_ntd": -1543
     }
   ]
 }

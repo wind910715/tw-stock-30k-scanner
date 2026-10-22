@@ -5,7 +5,7 @@
       "name": "台灣高鐵",
       "kind": "STOCK",
       "entry": 26.3,
-      "last_price": 26.35,
+      "last_price": 26.45,
       "stop": 25.91,
       "tp1": 27.22,
       "tp2": 28.4,
@@ -13,9 +13,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": -420,
-      "total_pnl_ntd": -420,
-      "total_pnl_pct": -0.21,
+      "unrealized_ntd": 341,
+      "total_pnl_ntd": 341,
+      "total_pnl_pct": 0.17,
       "time": "2026-10-21 18:05"
     },
     "4916.TW": {
@@ -54,24 +54,6 @@
       "total_pnl_pct": -0.05,
       "time": "2026-10-21 18:05"
     },
-    "2357.TW": {
-      "code": "2357",
-      "name": "華碩",
-      "kind": "STOCK",
-      "entry": 990.0,
-      "last_price": 980.0,
-      "stop": 975.15,
-      "tp1": 1024.65,
-      "tp2": 1069.2,
-      "tp1_hit": false,
-      "remain_ratio": 1.0,
-      "capital": 200000,
-      "realized_pnl_ntd": 0,
-      "unrealized_ntd": -2820,
-      "total_pnl_ntd": -2820,
-      "total_pnl_pct": -1.41,
-      "time": "2026-10-22 09:22"
-    },
     "2367.TW": {
       "code": "2367",
       "name": "燿華",
@@ -95,7 +77,7 @@
       "name": "元大美債20正2",
       "kind": "ETF",
       "entry": 6.14,
-      "last_price": 6.15,
+      "last_price": 6.18,
       "stop": 5.99,
       "tp1": 6.41,
       "tp2": 6.66,
@@ -103,9 +85,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": -474,
-      "total_pnl_ntd": -474,
-      "total_pnl_pct": -0.24,
+      "unrealized_ntd": 503,
+      "total_pnl_ntd": 503,
+      "total_pnl_pct": 0.25,
       "time": "2026-10-22 09:22"
     },
     "2542.TW": {
@@ -131,7 +113,7 @@
       "name": "台灣大",
       "kind": "STOCK",
       "entry": 131.0,
-      "last_price": 131.5,
+      "last_price": 132.0,
       "stop": 128.65,
       "tp1": 135.58,
       "tp2": 141.48,
@@ -139,9 +121,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": -37,
-      "total_pnl_ntd": -37,
-      "total_pnl_pct": -0.02,
+      "unrealized_ntd": 727,
+      "total_pnl_ntd": 727,
+      "total_pnl_pct": 0.36,
       "time": "2026-10-22 09:32"
     },
     "2504.TW": {
@@ -149,7 +131,7 @@
       "name": "國產",
       "kind": "STOCK",
       "entry": 32.2,
-      "last_price": 32.3,
+      "last_price": 32.35,
       "stop": 31.7,
       "tp1": 33.33,
       "tp2": 34.78,
@@ -157,9 +139,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": -179,
-      "total_pnl_ntd": -179,
-      "total_pnl_pct": -0.09,
+      "unrealized_ntd": 132,
+      "total_pnl_ntd": 132,
+      "total_pnl_pct": 0.07,
       "time": "2026-10-22 09:39"
     },
     "2027.TW": {
@@ -185,7 +167,7 @@
       "name": "佳世達",
       "kind": "STOCK",
       "entry": 29.65,
-      "last_price": 29.7,
+      "last_price": 29.5,
       "stop": 29.0,
       "tp1": 30.82,
       "tp2": 32.02,
@@ -193,9 +175,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": -463,
-      "total_pnl_ntd": -463,
-      "total_pnl_pct": -0.23,
+      "unrealized_ntd": -1812,
+      "total_pnl_ntd": -1812,
+      "total_pnl_pct": -0.91,
       "time": "2026-10-22 09:56"
     },
     "00688L.TW": {
@@ -203,7 +185,7 @@
       "name": "國泰20年美債正2",
       "kind": "ETF",
       "entry": 6.14,
-      "last_price": 6.14,
+      "last_price": 6.16,
       "stop": 5.98,
       "tp1": 6.43,
       "tp2": 6.7,
@@ -211,9 +193,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": -800,
-      "total_pnl_ntd": -800,
-      "total_pnl_pct": -0.4,
+      "unrealized_ntd": -149,
+      "total_pnl_ntd": -149,
+      "total_pnl_pct": -0.07,
       "time": "2026-10-22 10:13"
     },
     "2105.TW": {
@@ -229,9 +211,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": 0,
-      "total_pnl_ntd": 0,
-      "total_pnl_pct": 0.0,
+      "unrealized_ntd": -800,
+      "total_pnl_ntd": -800,
+      "total_pnl_pct": -0.4,
       "time": "2026-10-22 10:23"
     }
   },
@@ -248,6 +230,19 @@
       "reason": "🛑觸及硬停損清倉",
       "net_pnl_pct": -3.18,
       "net_pnl_ntd": -6364
+    },
+    {
+      "ticker": "2357.TW",
+      "code": "2357",
+      "name": "華碩",
+      "entry": 990.0,
+      "exit": 975.15,
+      "entry_time": "2026-10-22 09:22",
+      "exit_time": "2026-10-22 10:36",
+      "exit_date": "2026-10-22",
+      "reason": "🛑觸及硬停損清倉",
+      "net_pnl_pct": -1.9,
+      "net_pnl_ntd": -3800
     }
   ]
 }

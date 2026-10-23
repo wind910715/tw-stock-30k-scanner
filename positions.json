@@ -121,9 +121,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": 0,
-      "total_pnl_ntd": 0,
-      "total_pnl_pct": 0.0,
+      "unrealized_ntd": -800,
+      "total_pnl_ntd": -800,
+      "total_pnl_pct": -0.4,
       "time": "2026-10-22 17:20"
     },
     "2023.TW": {
@@ -139,9 +139,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": 0,
-      "total_pnl_ntd": 0,
-      "total_pnl_pct": 0.0,
+      "unrealized_ntd": -800,
+      "total_pnl_ntd": -800,
+      "total_pnl_pct": -0.4,
       "time": "2026-10-22 17:20"
     },
     "2892.TW": {
@@ -157,9 +157,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": 0,
-      "total_pnl_ntd": 0,
-      "total_pnl_pct": 0.0,
+      "unrealized_ntd": -800,
+      "total_pnl_ntd": -800,
+      "total_pnl_pct": -0.4,
       "time": "2026-10-22 17:20"
     },
     "2880.TW": {
@@ -175,9 +175,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": 0,
-      "total_pnl_ntd": 0,
-      "total_pnl_pct": 0.0,
+      "unrealized_ntd": -800,
+      "total_pnl_ntd": -800,
+      "total_pnl_pct": -0.4,
       "time": "2026-10-22 17:20"
     },
     "00713.TW": {
@@ -193,10 +193,28 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
+      "unrealized_ntd": -800,
+      "total_pnl_ntd": -800,
+      "total_pnl_pct": -0.4,
+      "time": "2026-10-22 17:20"
+    },
+    "3029.TW": {
+      "code": "3029",
+      "name": "零壹",
+      "kind": "STOCK",
+      "entry": 123.0,
+      "last_price": 123.0,
+      "stop": 118.84,
+      "tp1": 130.49,
+      "tp2": 137.56,
+      "tp1_hit": false,
+      "remain_ratio": 1.0,
+      "capital": 200000,
+      "realized_pnl_ntd": 0,
       "unrealized_ntd": 0,
       "total_pnl_ntd": 0,
       "total_pnl_pct": 0.0,
-      "time": "2026-10-22 17:20"
+      "time": "2026-10-23 17:19"
     }
   },
   "closed_history": [

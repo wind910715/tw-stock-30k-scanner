@@ -211,9 +211,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": 0,
-      "total_pnl_ntd": 0,
-      "total_pnl_pct": 0.0,
+      "unrealized_ntd": -800,
+      "total_pnl_ntd": -800,
+      "total_pnl_pct": -0.4,
       "time": "2026-10-23 17:19"
     }
   },

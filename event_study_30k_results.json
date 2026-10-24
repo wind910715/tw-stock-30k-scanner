@@ -1,0 +1,156 @@
+{
+  "generated_at": "2026-10-24 14:18:24",
+  "source": "yfinance",
+  "start": "2020-01-01",
+  "end": "2026-10-24",
+  "universe_n": 50,
+  "results": {
+    "A": {
+      "signals": 24,
+      "fwd": {
+        "5": {
+          "n": 24,
+          "win_rate": 87.5,
+          "mean": 0.5651,
+          "median": 0.4014,
+          "mean_net": -0.0199
+        },
+        "10": {
+          "n": 24,
+          "win_rate": 75.0,
+          "mean": 1.653,
+          "median": 1.6941,
+          "mean_net": 1.068
+        },
+        "20": {
+          "n": 23,
+          "win_rate": 65.22,
+          "mean": 0.8074,
+          "median": 1.0498,
+          "mean_net": 0.2224
+        }
+      },
+      "baseline_random": {
+        "5": {
+          "n": 24,
+          "win_rate": 70.83,
+          "mean": 0.4054,
+          "median": 0.3362,
+          "mean_net": -0.1796
+        },
+        "10": {
+          "n": 24,
+          "win_rate": 54.17,
+          "mean": 0.239,
+          "median": 0.3276,
+          "mean_net": -0.346
+        },
+        "20": {
+          "n": 24,
+          "win_rate": 41.67,
+          "mean": 0.2995,
+          "median": -0.0215,
+          "mean_net": -0.2855
+        }
+      }
+    },
+    "ENTRY": {
+      "signals": 49,
+      "fwd": {
+        "5": {
+          "n": 49,
+          "win_rate": 65.31,
+          "mean": 0.2247,
+          "median": 0.1937,
+          "mean_net": -0.3603
+        },
+        "10": {
+          "n": 49,
+          "win_rate": 51.02,
+          "mean": 0.1547,
+          "median": 0.0,
+          "mean_net": -0.4303
+        },
+        "20": {
+          "n": 49,
+          "win_rate": 59.18,
+          "mean": 0.4885,
+          "median": 0.2577,
+          "mean_net": -0.0965
+        }
+      },
+      "baseline_random": {
+        "5": {
+          "n": 49,
+          "win_rate": 44.9,
+          "mean": -0.0495,
+          "median": 0.0,
+          "mean_net": -0.6345
+        },
+        "10": {
+          "n": 49,
+          "win_rate": 44.9,
+          "mean": -0.0917,
+          "median": 0.0239,
+          "mean_net": -0.6767
+        },
+        "20": {
+          "n": 49,
+          "win_rate": 36.73,
+          "mean": -0.1503,
+          "median": -0.2827,
+          "mean_net": -0.7353
+        }
+      }
+    },
+    "S3": {
+      "signals": 50,
+      "fwd": {
+        "5": {
+          "n": 50,
+          "win_rate": 42.0,
+          "mean": -0.0694,
+          "median": -0.1577,
+          "mean_net": -0.6544
+        },
+        "10": {
+          "n": 50,
+          "win_rate": 50.0,
+          "mean": 0.1709,
+          "median": -0.2264,
+          "mean_net": -0.4141
+        },
+        "20": {
+          "n": 49,
+          "win_rate": 46.94,
+          "mean": -0.1057,
+          "median": -1.233,
+          "mean_net": -0.6907
+        }
+      },
+      "baseline_random": {
+        "5": {
+          "n": 50,
+          "win_rate": 48.0,
+          "mean": 0.537,
+          "median": -0.0381,
+          "mean_net": -0.048
+        },
+        "10": {
+          "n": 50,
+          "win_rate": 44.0,
+          "mean": 0.5771,
+          "median": -0.1524,
+          "mean_net": -0.0079
+        },
+        "20": {
+          "n": 50,
+          "win_rate": 50.0,
+          "mean": 0.9592,
+          "median": -0.479,
+          "mean_net": 0.3742
+        }
+      }
+    }
+  }
+}

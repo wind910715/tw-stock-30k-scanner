@@ -19,7 +19,12 @@
   注意：目前註冊帳戶等級為 register，FinMind 回傳 400 要求升級 Sponsor
   才能取分鐘資料；2020-2026 長視窗需升級後才能執行，本程式已備妥
   斷點續跑快取 (data_cache/30k_<code>.csv)，升級後直接續跑不需重抓。
-- 日線 MA 濾網：yfinance 模式用 yf 1d 日線；FinMind 模式由 30K 聚合日收盤。
+- 日線 MA 濾網：yfinance 模式用 yf 1d 日線；FinMind / Fugle 模式由 30K 聚合日收盤。
+- Fugle：分 K 歷史自 2023-05-23 起 (2020 崩盤與 2022 空頭無資料，判決須揭露)；
+  一天 10 根含 13:30 收盤集合競價 bar，本程式只取 09:00~13:00 的 9 根
+  以對齊實盤 yfinance 口徑；分 K 無還原股價，以 FinMind
+  TaiwanStockDividend 做向後還原 (見 fugle_loader.py)。
+  用法：python3 backtest_30k.py --source fugle --start 2023-05-23 --end 2026-10-22 --stocks 50
 
 股票池：沿用 scanner.fetch_all_market_candidates() 的量能篩選
 (個股 >=1500 張 / ETF >=500 張)，取成交量前 N 檔 (預設 50)，失敗時退回
@@ -201,6 +206,12 @@ def load_stock_30k(info, source, start, end, use_cache=True):
         if df30 is not None and use_cache:
             os.makedirs(CACHE_DIR, exist_ok=True)
             df30.to_csv(cache_path)
+        return df30, (daily_from_30k(df30) if df30 is not None else None)
+    if source == "fugle":
+        from fugle_loader import load_fugle_30k
+        df30, report = load_fugle_30k(code, start, end, use_cache=use_cache)
+        if df30 is not None:
+            print(f"  {code} Fugle 除權息事件 {report}")
         return df30, (daily_from_30k(df30) if df30 is not None else None)
     # yfinance (與實盤一致：group_by="ticker"，再用實盤 extract_ticker_df 萃取)
     import yfinance as yf
@@ -447,7 +458,7 @@ def selftest():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--source", choices=["yfinance", "finmind"], default="yfinance")
+    ap.add_argument("--source", choices=["yfinance", "finmind", "fugle"], default="yfinance")
     ap.add_argument("--start", default="2020-01-01")
     ap.add_argument("--end", default="2026-10-24")
     ap.add_argument("--stocks", type=int, default=50)
@@ -479,10 +490,16 @@ def main():
         "costs": {"buy": BUY_COST, "sell": SELL_COST},
         "trades": all_trades,
     }
+    SPLIT_DATE = "2025-05-01"  # 前後半切分：H1 2023-05~2025-04，H2 2025-05~2026-10
     for m in modes:
         s = summarize([t for t in all_trades if t["mode"] == m])
         results[f"summary_{m}"] = s
         print_summary(f"30K 回測 ({args.source}, {m})", s)
+        for h, subset in (("h1", [t for t in all_trades if t["mode"] == m and t["entry_date"] < SPLIT_DATE]),
+                          ("h2", [t for t in all_trades if t["mode"] == m and t["entry_date"] >= SPLIT_DATE])):
+            sh = summarize(subset)
+            results[f"summary_{m}_{h}"] = sh
+            print_summary(f"30K 回測 ({args.source}, {m}, {h} {'<' if h == 'h1' else '>='} {SPLIT_DATE})", sh)
     s_all = summarize(all_trades)
     results["summary_all"] = s_all
     print_summary(f"30K 回測 ({args.source}, 合計)", s_all)

@@ -134,6 +134,9 @@ def fwd_stats(df_ind, idxs, horizons=HORIZONS):
     return out
 
 
+SPLIT_DATE = "2025-05-01"  # 前後半切分：H1 2023-05~2025-04，H2 2025-05~2026-10
+
+
 def run_event_study(df30, daily_df, info, seed=42):
     sigs, df_ind = collect_signals(df30, daily_df, info)
     if df_ind is None:
@@ -141,14 +144,20 @@ def run_event_study(df30, daily_df, info, seed=42):
     rng = np.random.default_rng(seed)
     result = {}
     n = len(df_ind)
+    split = pd.Timestamp(SPLIT_DATE).date()
     for sig_type in ("A", "ENTRY", "S3"):
         idxs = [i for i, t in sigs if t == sig_type]
         if not idxs:
             continue
         base_idx = rng.integers(WARMUP_DAILY, n, size=len(idxs)).tolist()
+        h1 = [i for i in idxs if df_ind.index[i].date() < split]
+        h2 = [i for i in idxs if df_ind.index[i].date() >= split]
         result[sig_type] = {
             "signals": len(idxs),
             "fwd": fwd_stats(df_ind, idxs),
+            "fwd_h1": fwd_stats(df_ind, h1),
+            "fwd_h2": fwd_stats(df_ind, h2),
+            "signals_h1": len(h1), "signals_h2": len(h2),
             "baseline_random": fwd_stats(df_ind, base_idx),
         }
     return result
@@ -162,10 +171,13 @@ def merge_stats(all_results):
         per = [r[sig_type] for r in all_results if sig_type in r]
         if not per:
             continue
-        m = {"signals": sum(p["signals"] for p in per), "fwd": {}, "baseline_random": {}}
-        for key in ("fwd", "baseline_random"):
+        m = {"signals": sum(p["signals"] for p in per),
+             "signals_h1": sum(p.get("signals_h1", 0) for p in per),
+             "signals_h2": sum(p.get("signals_h2", 0) for p in per),
+             "fwd": {}, "fwd_h1": {}, "fwd_h2": {}, "baseline_random": {}}
+        for key in ("fwd", "fwd_h1", "fwd_h2", "baseline_random"):
             for h in ("5", "10", "20"):
-                rows = [p[key][h] for p in per if h in p[key]]
+                rows = [p[key][h] for p in per if key in p and h in p[key]]
                 if not rows:
                     continue
                 tot = sum(r["n"] for r in rows)
@@ -182,7 +194,7 @@ def merge_stats(all_results):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--source", choices=["yfinance", "finmind"], default="yfinance")
+    ap.add_argument("--source", choices=["yfinance", "finmind", "fugle"], default="yfinance")
     ap.add_argument("--start", default="2020-01-01")
     ap.add_argument("--end", default="2026-10-24")
     ap.add_argument("--stocks", type=int, default=50)
@@ -210,12 +222,16 @@ def main():
         "universe_n": len(uni), "results": merged,
     }
     for sig_type, m in merged.items():
-        print(f"\n=== 事件研究 {sig_type} (共 {m['signals']} 訊號) ===")
+        print(f"\n=== 事件研究 {sig_type} (共 {m['signals']} 訊號，H1 {m.get('signals_h1', 0)} / H2 {m.get('signals_h2', 0)}) ===")
         for h in ("5", "10", "20"):
             f, b = m["fwd"].get(h), m["baseline_random"].get(h)
             if f and b:
                 print(f"  +{h}根: 平均 {f['mean']:+.3f}% (淨 {f['mean_net']:+.3f}%) 勝率 {f['win_rate']}%"
                       f" ｜ 隨機基準 平均 {b['mean']:+.3f}% 勝率 {b['win_rate']}%")
+            f1, f2 = m.get("fwd_h1", {}).get(h), m.get("fwd_h2", {}).get(h)
+            if f1 and f2:
+                print(f"    H1: 平均 {f1['mean']:+.3f}% (淨 {f1['mean_net']:+.3f}%) 勝率 {f1['win_rate']}% (n={f1['n']})"
+                      f" ｜ H2: 平均 {f2['mean']:+.3f}% (淨 {f2['mean_net']:+.3f}%) 勝率 {f2['win_rate']}% (n={f2['n']})")
     with open(args.out, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
     print(f"\n結果已寫入 {args.out}")

@@ -1,0 +1,300 @@
+{
+  "generated_at": "2026-10-24 15:37:54",
+  "source": "fugle",
+  "start": "2023-05-23",
+  "end": "2026-10-22",
+  "universe_n": 50,
+  "results": {
+    "A": {
+      "signals": 280,
+      "signals_h1": 170,
+      "signals_h2": 110,
+      "fwd": {
+        "5": {
+          "n": 280,
+          "win_rate": 48.22,
+          "mean": 0.2499,
+          "median": 0.0088,
+          "mean_net": -0.3351
+        },
+        "10": {
+          "n": 280,
+          "win_rate": 49.29,
+          "mean": 0.3359,
+          "median": -0.0292,
+          "mean_net": -0.2491
+        },
+        "20": {
+          "n": 279,
+          "win_rate": 47.31,
+          "mean": 0.2141,
+          "median": -0.0828,
+          "mean_net": -0.3709
+        }
+      },
+      "fwd_h1": {
+        "5": {
+          "n": 170,
+          "win_rate": 42.35,
+          "mean": 0.1977,
+          "median": -0.198,
+          "mean_net": -0.3873
+        },
+        "10": {
+          "n": 170,
+          "win_rate": 42.35,
+          "mean": 0.1335,
+          "median": -0.277,
+          "mean_net": -0.4515
+        },
+        "20": {
+          "n": 170,
+          "win_rate": 43.53,
+          "mean": 0.1684,
+          "median": -0.2667,
+          "mean_net": -0.4166
+        }
+      },
+      "fwd_h2": {
+        "5": {
+          "n": 110,
+          "win_rate": 57.27,
+          "mean": 0.3304,
+          "median": 0.2332,
+          "mean_net": -0.2546
+        },
+        "10": {
+          "n": 110,
+          "win_rate": 60.0,
+          "mean": 0.6488,
+          "median": 0.818,
+          "mean_net": 0.0638
+        },
+        "20": {
+          "n": 109,
+          "win_rate": 53.21,
+          "mean": 0.2854,
+          "median": 0.1256,
+          "mean_net": -0.2996
+        }
+      },
+      "baseline_random": {
+        "5": {
+          "n": 280,
+          "win_rate": 57.86,
+          "mean": 0.0651,
+          "median": 0.1623,
+          "mean_net": -0.5199
+        },
+        "10": {
+          "n": 280,
+          "win_rate": 56.07,
+          "mean": 0.2589,
+          "median": 0.2853,
+          "mean_net": -0.3261
+        },
+        "20": {
+          "n": 280,
+          "win_rate": 51.79,
+          "mean": 0.1227,
+          "median": 0.1861,
+          "mean_net": -0.4623
+        }
+      }
+    },
+    "ENTRY": {
+      "signals": 386,
+      "signals_h1": 199,
+      "signals_h2": 187,
+      "fwd": {
+        "5": {
+          "n": 386,
+          "win_rate": 46.11,
+          "mean": 0.1435,
+          "median": 0.0285,
+          "mean_net": -0.4415
+        },
+        "10": {
+          "n": 386,
+          "win_rate": 47.67,
+          "mean": 0.3541,
+          "median": 0.0256,
+          "mean_net": -0.2309
+        },
+        "20": {
+          "n": 386,
+          "win_rate": 55.18,
+          "mean": 0.6329,
+          "median": 0.2704,
+          "mean_net": 0.0479
+        }
+      },
+      "fwd_h1": {
+        "5": {
+          "n": 199,
+          "win_rate": 47.24,
+          "mean": 0.2478,
+          "median": 0.0,
+          "mean_net": -0.3372
+        },
+        "10": {
+          "n": 199,
+          "win_rate": 47.24,
+          "mean": 0.5429,
+          "median": -0.0166,
+          "mean_net": -0.0421
+        },
+        "20": {
+          "n": 199,
+          "win_rate": 54.77,
+          "mean": 0.7344,
+          "median": 0.2262,
+          "mean_net": 0.1494
+        }
+      },
+      "fwd_h2": {
+        "5": {
+          "n": 187,
+          "win_rate": 44.92,
+          "mean": 0.0326,
+          "median": 0.023,
+          "mean_net": -0.5524
+        },
+        "10": {
+          "n": 187,
+          "win_rate": 48.13,
+          "mean": 0.1532,
+          "median": 0.247,
+          "mean_net": -0.4318
+        },
+        "20": {
+          "n": 187,
+          "win_rate": 55.62,
+          "mean": 0.5249,
+          "median": 0.3906,
+          "mean_net": -0.0601
+        }
+      },
+      "baseline_random": {
+        "5": {
+          "n": 386,
+          "win_rate": 48.45,
+          "mean": 0.16,
+          "median": 0.0678,
+          "mean_net": -0.425
+        },
+        "10": {
+          "n": 386,
+          "win_rate": 49.74,
+          "mean": 0.2737,
+          "median": 0.1119,
+          "mean_net": -0.3113
+        },
+        "20": {
+          "n": 386,
+          "win_rate": 45.08,
+          "mean": -0.0146,
+          "median": -0.252,
+          "mean_net": -0.5996
+        }
+      }
+    },
+    "S3": {
+      "signals": 429,
+      "signals_h1": 191,
+      "signals_h2": 238,
+      "fwd": {
+        "5": {
+          "n": 429,
+          "win_rate": 49.18,
+          "mean": 0.335,
+          "median": 0.0703,
+          "mean_net": -0.25
+        },
+        "10": {
+          "n": 429,
+          "win_rate": 59.44,
+          "mean": 0.8137,
+          "median": 0.344,
+          "mean_net": 0.2287
+        },
+        "20": {
+          "n": 428,
+          "win_rate": 57.01,
+          "mean": 1.155,
+          "median": 0.3217,
+          "mean_net": 0.57
+        }
+      },
+      "fwd_h1": {
+        "5": {
+          "n": 191,
+          "win_rate": 47.64,
+          "mean": 0.1576,
+          "median": 0.0164,
+          "mean_net": -0.4274
+        },
+        "10": {
+          "n": 191,
+          "win_rate": 54.45,
+          "mean": 0.3965,
+          "median": 0.234,
+          "mean_net": -0.1885
+        },
+        "20": {
+          "n": 191,
+          "win_rate": 54.45,
+          "mean": 0.8508,
+          "median": 0.1949,
+          "mean_net": 0.2658
+        }
+      },
+      "fwd_h2": {
+        "5": {
+          "n": 238,
+          "win_rate": 50.42,
+          "mean": 0.4774,
+          "median": 0.0645,
+          "mean_net": -0.1076
+        },
+        "10": {
+          "n": 238,
+          "win_rate": 63.45,
+          "mean": 1.1486,
+          "median": 0.6827,
+          "mean_net": 0.5636
+        },
+        "20": {
+          "n": 237,
+          "win_rate": 59.07,
+          "mean": 1.4001,
+          "median": 0.921,
+          "mean_net": 0.8151
+        }
+      },
+      "baseline_random": {
+        "5": {
+          "n": 429,
+          "win_rate": 47.32,
+          "mean": 0.297,
+          "median": 0.0871,
+          "mean_net": -0.288
+        },
+        "10": {
+          "n": 429,
+          "win_rate": 47.78,
+          "mean": 0.2142,
+          "median": -0.1207,
+          "mean_net": -0.3708
+        },
+        "20": {
+          "n": 429,
+          "win_rate": 47.55,
+          "mean": -0.1481,
+          "median": -0.1891,
+          "mean_net": -0.7331
+        }
+      }
+    }
+  }
+}

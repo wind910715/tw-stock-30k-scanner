@@ -130,8 +130,51 @@ def fetch_all_market_candidates():
     print(f"✅ 完成全市場流動性初篩，共載入 {len(candidates)} 檔活水標的")
     return candidates
 
+def drop_incomplete_last_bar(df):
+    """丟棄尚未收盤的最後一根 30m K。
+
+    yfinance 盤中查詢時最後一根 K 是「形成中」的 K：其 Close/OSC/Volume
+    會隨盤中波動重繪 (repaint)。若拿它觸發金叉訊號或判定死叉/停損清倉，
+    同一根 K 內可能先觸發後又消失，帳本卻已永久寫入（假訊號）。
+    30m K 的 index 為 K 棒開始時間，故 K 棒結束 = index + 30 分鐘；
+    結束時間尚未到達現在者視為未收盤而丟棄，訊號一律以最後一根已收盤 K 判定。
+    收盤後執行 (EOD/週報) 時最後一根早已收盤，此函數為 no-op。
+    """
+    if df is None or df.empty:
+        return df
+    try:
+        bar_end = pd.Timestamp(df.index[-1]) + pd.Timedelta(minutes=30)
+        if bar_end.tzinfo is None:
+            bar_end = bar_end.tz_localize("Asia/Taipei")
+        else:
+            bar_end = bar_end.tz_convert("Asia/Taipei")
+        if bar_end > now_tw():
+            return df.iloc[:-1]
+    except Exception as e:
+        print(f"⚠️ 判斷未完成 K 棒異常: {e}")
+    return df
+
+def extract_ticker_df(batch_data, tk):
+    """自 yf.download(group_by='ticker') 的批次結果萃取單檔 DF。
+
+    注意：即使批次只有 1 檔，yfinance 仍回傳 MultiIndex 欄位
+    （第一層為 ticker），直接把整張表當單檔 DF 用會導致
+    dropna(subset=['Close']) 拋 KeyError。舊程式只在 len>1 時取
+    batch_data[tk]、len==1 時誤用整張表，造成單檔批次永遠無訊號、
+    單一持倉永遠無法執行停損檢查（且例外被外層靜默吞掉）。
+    """
+    try:
+        if isinstance(batch_data.columns, pd.MultiIndex) and tk in batch_data.columns.get_level_values(0):
+            return batch_data[tk]
+    except Exception:
+        pass
+    return batch_data
+
 def calc_30k_indicators(df):
     """計算 30K 20/60MA、MACD(12,26,9) 與 RSI(14)"""
+    if df is None or df.empty:
+        return None
+    df = drop_incomplete_last_bar(df)
     if df is None or df.empty:
         return None
     df = df.dropna(subset=['Close', 'Open', 'High', 'Low']).copy()
@@ -156,7 +199,31 @@ def calc_30k_indicators(df):
     df['RSI'] = df['RSI'].fillna(50.0)
     return df
 
-def evaluate_signal(raw_df, ticker, name, kind, mode="eod"):
+
+_DAILY_CACHE = {"date": None, "frame": None}
+
+def fetch_daily_universe(ticker_list):
+    """抓全市場日線（6mo，約 120 根交易日）供日線 MA20/MA60 濾網使用，每天只抓一次。
+
+    背景：舊程式用 30m 資料 resample 推日線，但 yfinance 30m 資料最多只給 60 天
+    （實測 1mo 僅約 18 根日線），rolling(min(60, len)) 實際算的是 MA18，卻被當成
+    「日線 60MA」做多頭濾網 —— 名不符實。日線必須用 interval="1d" 另外抓，
+    60d 上限只適用於分鐘線，日線 6mo 無此限制。
+    抓取失敗時回傳 None，呼叫端退回舊的 resample 口徑（並印出警告）。
+    """
+    today = now_tw().strftime("%Y-%m-%d")
+    if _DAILY_CACHE["date"] == today and _DAILY_CACHE["frame"] is not None:
+        return _DAILY_CACHE["frame"]
+    try:
+        frame = yf.download(ticker_list, period="6mo", interval="1d", group_by="ticker", threads=True, progress=False)
+        _DAILY_CACHE["date"] = today
+        _DAILY_CACHE["frame"] = frame
+        return frame
+    except Exception as e:
+        print(f"⚠️ 日線下載異常，退回 30m resample 口徑: {e}")
+        return None
+
+def evaluate_signal(raw_df, ticker, name, kind, mode="eod", daily_df=None):
     """
     高勝率＆高賺賠比策略核心：
     1. 大週期保護：日線收盤 > 日線20MA 且 > 日線60MA，且日線20MA向上
@@ -169,7 +236,10 @@ def evaluate_signal(raw_df, ticker, name, kind, mode="eod"):
         if df is None:
             return None
 
-        daily_close = df['Close'].resample('1D').last().dropna()
+        if daily_df is not None and len(daily_df) > 0 and 'Close' in daily_df:
+            daily_close = daily_df['Close'].dropna()
+        else:
+            daily_close = df['Close'].resample('1D').last().dropna()
         if len(daily_close) < 15:
             return None
         ma20_d_series = daily_close.rolling(min(20, len(daily_close))).mean()
@@ -260,7 +330,8 @@ def evaluate_signal(raw_df, ticker, name, kind, mode="eod"):
                     "rsi": round(rsi_now, 1), "status": "⏳準金叉蓄勢", "score": tightness_score
                 }
             return None
-    except Exception:
+    except Exception as e:
+        print(f"⚠️ 評估訊號異常 {ticker}: {e}")
         return None
 
 def update_and_check_positions(state, is_eod=False):
@@ -283,159 +354,163 @@ def update_and_check_positions(state, is_eod=False):
     today_date = now_tw().strftime("%Y-%m-%d")
 
     try:
-        batch_data = yf.download(tickers, period="1mo", interval="30m", group_by="ticker", threads=True, progress=False)
+        batch_data = yf.download(tickers, period="60d", interval="30m", group_by="ticker", threads=True, progress=False)
         for tk in list(active.keys()):
-            pos = active[tk]
-            df_raw = batch_data[tk] if len(tickers) > 1 and tk in batch_data else batch_data
-            df = calc_30k_indicators(df_raw)
-            if df is None or df.empty:
+            try:
+                pos = active[tk]
+                df_raw = extract_ticker_df(batch_data, tk)
+                df = calc_30k_indicators(df_raw)
+                if df is None or df.empty:
+                    continue
+
+                last = df.iloc[-1]
+                prev1 = df.iloc[-2]
+                curr_price = round(float(last['Close']), 2)
+                curr_low = round(float(last['Low']), 2)
+                curr_high = round(float(last['High']), 2)
+                ma20_now = round(float(last['MA20']), 2)
+                ma60_now = round(float(last['MA60']), 2)
+                osc_now = float(last['OSC'])
+                osc_prev = float(prev1['OSC'])
+
+                entry_p = float(pos['entry'])
+                stop_p = float(pos['stop'])
+                tp1_p = float(pos['tp1'])
+                tp2_p = float(pos.get('tp2', round(entry_p * (1.0 + TP2_PCT), 2)))
+                capital = float(pos.get('capital', CAPITAL_PER_TRADE))
+                remain_ratio = float(pos.get('remain_ratio', 1.0))
+                realized_ntd = float(pos.get('realized_pnl_ntd', 0.0))
+                tp1_hit = bool(pos.get('tp1_hit', False))
+
+                # 更新持倉最新現價與未實現損益 (供 17:00 日報展示)
+                pos['last_price'] = curr_price
+                gross_ret = (curr_price - entry_p) / entry_p
+                net_ret_rem = gross_ret - FEE_TAX_RATE
+                unrealized_ntd = round(capital * remain_ratio * net_ret_rem)
+                total_pos_ntd = round(realized_ntd + unrealized_ntd)
+                total_pos_pct = round(total_pos_ntd / capital * 100, 2)
+                pos['unrealized_ntd'] = unrealized_ntd
+                pos['total_pnl_ntd'] = total_pos_ntd
+                pos['total_pnl_pct'] = total_pos_pct
+
+                # 情況 1：觸及硬停損 或 TP1 後的保本防線
+                if curr_price <= stop_p or curr_low <= stop_p:
+                    exit_exec_p = stop_p if curr_low <= stop_p else curr_price
+                    net_ret_exit = ((exit_exec_p - entry_p) / entry_p) - FEE_TAX_RATE
+                    exit_ntd = round(capital * remain_ratio * net_ret_exit)
+                    final_ntd = round(realized_ntd + exit_ntd)
+                    final_pct = round(final_ntd / capital * 100, 2)
+                    reason = "🛡️TP1後保本止盈清倉" if tp1_hit else "🛑觸及硬停損清倉"
+
+                    closed_record = {
+                        "ticker": tk, "code": pos["code"], "name": pos["name"],
+                        "entry": entry_p, "exit": exit_exec_p,
+                        "entry_time": pos.get("time", ""), "exit_time": now_str, "exit_date": today_date,
+                        "reason": reason, "net_pnl_pct": final_pct, "net_pnl_ntd": final_ntd
+                    }
+                    closed_history.append(closed_record)
+                    alerts.append(
+                        f"{reason}｜*{pos['code']} {pos['name']}*\n"
+                        f"• 進場價：`{entry_p}` ➔ 出場價：`{exit_exec_p}`\n"
+                        f"• 實質淨損益（含已鎖利、扣稅費）：`{final_pct:+.2f}%`（`{final_ntd:+,} 元`）"
+                    )
+                    del active[tk]
+                    continue
+
+                # 情況 2：達陣 TP2 波段大目標 (+8% 或 3.5R) 全數獲利清倉
+                if curr_price >= tp2_p or curr_high >= tp2_p:
+                    exit_exec_p = tp2_p if curr_high >= tp2_p else curr_price
+                    net_ret_exit = ((exit_exec_p - entry_p) / entry_p) - FEE_TAX_RATE
+                    exit_ntd = round(capital * remain_ratio * net_ret_exit)
+                    final_ntd = round(realized_ntd + exit_ntd)
+                    final_pct = round(final_ntd / capital * 100, 2)
+                    reason = "🎯達陣TP2波段目標清倉"
+
+                    closed_history.append({
+                        "ticker": tk, "code": pos["code"], "name": pos["name"],
+                        "entry": entry_p, "exit": exit_exec_p,
+                        "entry_time": pos.get("time", ""), "exit_time": now_str, "exit_date": today_date,
+                        "reason": reason, "net_pnl_pct": final_pct, "net_pnl_ntd": final_ntd
+                    })
+                    alerts.append(
+                        f"🎯【恭喜達陣 TP2 波段目標清倉！】*{pos['code']} {pos['name']}*\n"
+                        f"• 進場價：`{entry_p}` ➔ 止盈價：`{exit_exec_p}`\n"
+                        f"• 實質總淨獲利（扣稅費）：`{final_pct:+.2f}%`（`{final_ntd:+,} 元`）"
+                    )
+                    del active[tk]
+                    continue
+
+                # 情況 3：首次達陣 TP1 (+3.5% 或 1.8R) -> 減碼 50% 鎖利，停損上移至「成本+0.5%」
+                if not tp1_hit and (curr_price >= tp1_p or curr_high >= tp1_p):
+                    exec_tp1 = tp1_p if curr_high >= tp1_p else curr_price
+                    net_ret_half = ((exec_tp1 - entry_p) / entry_p) - FEE_TAX_RATE
+                    half_ntd = round(capital * 0.5 * net_ret_half)
+                    new_stop = round(entry_p * 1.005, 2)  # 鎖住稅費後淨賺保本線
+
+                    pos['tp1_hit'] = True
+                    pos['remain_ratio'] = 0.5
+                    pos['realized_pnl_ntd'] = half_ntd
+                    pos['stop'] = new_stop
+                    pos['total_pnl_ntd'] = half_ntd + round(capital * 0.5 * (((curr_price - entry_p) / entry_p) - FEE_TAX_RATE))
+                    pos['total_pnl_pct'] = round(pos['total_pnl_ntd'] / capital * 100, 2)
+
+                    alerts.append(
+                        f"💰【達標 TP1 減碼 50% 鎖利！】*{pos['code']} {pos['name']}*\n"
+                        f"• 進場價：`{entry_p}` ➔ 減碼價：`{exec_tp1}`\n"
+                        f"• 已實現入袋（半倉扣稅費）：`+{half_ntd:,} 元`\n"
+                        f"• 🛡️ 剩餘 50% 部位防守線已上移至：`{new_stop}`（確保全單必賺），續抱挑戰 TP2 `{tp2_p}`！"
+                    )
+                    continue
+
+                # 情況 4：出現 30K MACD 死叉 且 跌破 30K 20MA -> 動能轉弱清倉
+                if (osc_now < 0 and osc_prev >= 0) and (curr_price < ma20_now):
+                    net_ret_exit = ((curr_price - entry_p) / entry_p) - FEE_TAX_RATE
+                    exit_ntd = round(capital * remain_ratio * net_ret_exit)
+                    final_ntd = round(realized_ntd + exit_ntd)
+                    final_pct = round(final_ntd / capital * 100, 2)
+                    reason = "⚠️30K死叉破20MA清倉"
+
+                    closed_history.append({
+                        "ticker": tk, "code": pos["code"], "name": pos["name"],
+                        "entry": entry_p, "exit": curr_price,
+                        "entry_time": pos.get("time", ""), "exit_time": now_str, "exit_date": today_date,
+                        "reason": reason, "net_pnl_pct": final_pct, "net_pnl_ntd": final_ntd
+                    })
+                    alerts.append(
+                        f"⚠️【30K 死叉破線清倉】*{pos['code']} {pos['name']}*\n"
+                        f"• 進場價：`{entry_p}` ➔ 清倉價：`{curr_price}` (跌破30K 20MA `{ma20_now}`)\n"
+                        f"• 實質總淨損益（扣稅費）：`{final_pct:+.2f}%`（`{final_ntd:+,} 元`）"
+                    )
+                    del active[tk]
+                    continue
+
+                # 情況 5：盤後檢查「時間停損」(持倉超過 5 天未達 TP1 且漲幅 < 1%)
+                if is_eod and not tp1_hit:
+                    try:
+                        entry_dt = datetime.strptime(pos.get("time", "")[:10], "%Y-%m-%d")
+                        days_held = (now_tw().replace(tzinfo=None) - entry_dt).days
+                        if days_held >= MAX_HOLD_DAYS and gross_ret < 0.01:
+                            net_ret_exit = gross_ret - FEE_TAX_RATE
+                            final_ntd = round(capital * remain_ratio * net_ret_exit)
+                            final_pct = round(final_ntd / capital * 100, 2)
+                            reason = "⏱️滿5日動能停滯清倉"
+                            closed_history.append({
+                                "ticker": tk, "code": pos["code"], "name": pos["name"],
+                                "entry": entry_p, "exit": curr_price,
+                                "entry_time": pos.get("time", ""), "exit_time": now_str, "exit_date": today_date,
+                                "reason": reason, "net_pnl_pct": final_pct, "net_pnl_ntd": final_ntd
+                            })
+                            alerts.append(
+                                f"⏱️【時間停損清倉換股】*{pos['code']} {pos['name']}*\n"
+                                f"• 持倉逾 {days_held} 日動能停滯｜進場：`{entry_p}` ➔ 清倉：`{curr_price}`\n"
+                                f"• 實質淨損益：`{final_pct:+.2f}%`（`{final_ntd:+,} 元`）"
+                            )
+                            del active[tk]
+                    except Exception:
+                        pass
+            except Exception as e:
+                print(f"⚠️ 持倉 {tk} 檢查異常，已跳過不影響其他持倉: {e}")
                 continue
-
-            last = df.iloc[-1]
-            prev1 = df.iloc[-2]
-            curr_price = round(float(last['Close']), 2)
-            curr_low = round(float(last['Low']), 2)
-            curr_high = round(float(last['High']), 2)
-            ma20_now = round(float(last['MA20']), 2)
-            ma60_now = round(float(last['MA60']), 2)
-            osc_now = float(last['OSC'])
-            osc_prev = float(prev1['OSC'])
-
-            entry_p = float(pos['entry'])
-            stop_p = float(pos['stop'])
-            tp1_p = float(pos['tp1'])
-            tp2_p = float(pos.get('tp2', round(entry_p * (1.0 + TP2_PCT), 2)))
-            capital = float(pos.get('capital', CAPITAL_PER_TRADE))
-            remain_ratio = float(pos.get('remain_ratio', 1.0))
-            realized_ntd = float(pos.get('realized_pnl_ntd', 0.0))
-            tp1_hit = bool(pos.get('tp1_hit', False))
-
-            # 更新持倉最新現價與未實現損益 (供 17:00 日報展示)
-            pos['last_price'] = curr_price
-            gross_ret = (curr_price - entry_p) / entry_p
-            net_ret_rem = gross_ret - FEE_TAX_RATE
-            unrealized_ntd = round(capital * remain_ratio * net_ret_rem)
-            total_pos_ntd = round(realized_ntd + unrealized_ntd)
-            total_pos_pct = round(total_pos_ntd / capital * 100, 2)
-            pos['unrealized_ntd'] = unrealized_ntd
-            pos['total_pnl_ntd'] = total_pos_ntd
-            pos['total_pnl_pct'] = total_pos_pct
-
-            # 情況 1：觸及硬停損 或 TP1 後的保本防線
-            if curr_price <= stop_p or curr_low <= stop_p:
-                exit_exec_p = stop_p if curr_low <= stop_p else curr_price
-                net_ret_exit = ((exit_exec_p - entry_p) / entry_p) - FEE_TAX_RATE
-                exit_ntd = round(capital * remain_ratio * net_ret_exit)
-                final_ntd = round(realized_ntd + exit_ntd)
-                final_pct = round(final_ntd / capital * 100, 2)
-                reason = "🛡️TP1後保本止盈清倉" if tp1_hit else "🛑觸及硬停損清倉"
-
-                closed_record = {
-                    "ticker": tk, "code": pos["code"], "name": pos["name"],
-                    "entry": entry_p, "exit": exit_exec_p,
-                    "entry_time": pos.get("time", ""), "exit_time": now_str, "exit_date": today_date,
-                    "reason": reason, "net_pnl_pct": final_pct, "net_pnl_ntd": final_ntd
-                }
-                closed_history.append(closed_record)
-                alerts.append(
-                    f"{reason}｜*{pos['code']} {pos['name']}*\n"
-                    f"• 進場價：`{entry_p}` ➔ 出場價：`{exit_exec_p}`\n"
-                    f"• 實質淨損益（含已鎖利、扣稅費）：`{final_pct:+.2f}%`（`{final_ntd:+,} 元`）"
-                )
-                del active[tk]
-                continue
-
-            # 情況 2：達陣 TP2 波段大目標 (+8% 或 3.5R) 全數獲利清倉
-            if curr_price >= tp2_p or curr_high >= tp2_p:
-                exit_exec_p = tp2_p if curr_high >= tp2_p else curr_price
-                net_ret_exit = ((exit_exec_p - entry_p) / entry_p) - FEE_TAX_RATE
-                exit_ntd = round(capital * remain_ratio * net_ret_exit)
-                final_ntd = round(realized_ntd + exit_ntd)
-                final_pct = round(final_ntd / capital * 100, 2)
-                reason = "🎯達陣TP2波段目標清倉"
-
-                closed_history.append({
-                    "ticker": tk, "code": pos["code"], "name": pos["name"],
-                    "entry": entry_p, "exit": exit_exec_p,
-                    "entry_time": pos.get("time", ""), "exit_time": now_str, "exit_date": today_date,
-                    "reason": reason, "net_pnl_pct": final_pct, "net_pnl_ntd": final_ntd
-                })
-                alerts.append(
-                    f"🎯【恭喜達陣 TP2 波段目標清倉！】*{pos['code']} {pos['name']}*\n"
-                    f"• 進場價：`{entry_p}` ➔ 止盈價：`{exit_exec_p}`\n"
-                    f"• 實質總淨獲利（扣稅費）：`{final_pct:+.2f}%`（`{final_ntd:+,} 元`）"
-                )
-                del active[tk]
-                continue
-
-            # 情況 3：首次達陣 TP1 (+3.5% 或 1.8R) -> 減碼 50% 鎖利，停損上移至「成本+0.5%」
-            if not tp1_hit and (curr_price >= tp1_p or curr_high >= tp1_p):
-                exec_tp1 = tp1_p if curr_high >= tp1_p else curr_price
-                net_ret_half = ((exec_tp1 - entry_p) / entry_p) - FEE_TAX_RATE
-                half_ntd = round(capital * 0.5 * net_ret_half)
-                new_stop = round(entry_p * 1.005, 2)  # 鎖住稅費後淨賺保本線
-
-                pos['tp1_hit'] = True
-                pos['remain_ratio'] = 0.5
-                pos['realized_pnl_ntd'] = half_ntd
-                pos['stop'] = new_stop
-                pos['total_pnl_ntd'] = half_ntd + round(capital * 0.5 * (((curr_price - entry_p) / entry_p) - FEE_TAX_RATE))
-                pos['total_pnl_pct'] = round(pos['total_pnl_ntd'] / capital * 100, 2)
-
-                alerts.append(
-                    f"💰【達標 TP1 減碼 50% 鎖利！】*{pos['code']} {pos['name']}*\n"
-                    f"• 進場價：`{entry_p}` ➔ 減碼價：`{exec_tp1}`\n"
-                    f"• 已實現入袋（半倉扣稅費）：`+{half_ntd:,} 元`\n"
-                    f"• 🛡️ 剩餘 50% 部位防守線已上移至：`{new_stop}`（確保全單必賺），續抱挑戰 TP2 `{tp2_p}`！"
-                )
-                continue
-
-            # 情況 4：出現 30K MACD 死叉 且 跌破 30K 20MA -> 動能轉弱清倉
-            if (osc_now < 0 and osc_prev >= 0) and (curr_price < ma20_now):
-                net_ret_exit = ((curr_price - entry_p) / entry_p) - FEE_TAX_RATE
-                exit_ntd = round(capital * remain_ratio * net_ret_exit)
-                final_ntd = round(realized_ntd + exit_ntd)
-                final_pct = round(final_ntd / capital * 100, 2)
-                reason = "⚠️30K死叉破20MA清倉"
-
-                closed_history.append({
-                    "ticker": tk, "code": pos["code"], "name": pos["name"],
-                    "entry": entry_p, "exit": curr_price,
-                    "entry_time": pos.get("time", ""), "exit_time": now_str, "exit_date": today_date,
-                    "reason": reason, "net_pnl_pct": final_pct, "net_pnl_ntd": final_ntd
-                })
-                alerts.append(
-                    f"⚠️【30K 死叉破線清倉】*{pos['code']} {pos['name']}*\n"
-                    f"• 進場價：`{entry_p}` ➔ 清倉價：`{curr_price}` (跌破30K 20MA `{ma20_now}`)\n"
-                    f"• 實質總淨損益（扣稅費）：`{final_pct:+.2f}%`（`{final_ntd:+,} 元`）"
-                )
-                del active[tk]
-                continue
-
-            # 情況 5：盤後檢查「時間停損」(持倉超過 5 天未達 TP1 且漲幅 < 1%)
-            if is_eod and not tp1_hit:
-                try:
-                    entry_dt = datetime.strptime(pos.get("time", "")[:10], "%Y-%m-%d")
-                    days_held = (now_tw().replace(tzinfo=None) - entry_dt).days
-                    if days_held >= MAX_HOLD_DAYS and gross_ret < 0.01:
-                        net_ret_exit = gross_ret - FEE_TAX_RATE
-                        final_ntd = round(capital * remain_ratio * net_ret_exit)
-                        final_pct = round(final_ntd / capital * 100, 2)
-                        reason = "⏱️滿5日動能停滯清倉"
-                        closed_history.append({
-                            "ticker": tk, "code": pos["code"], "name": pos["name"],
-                            "entry": entry_p, "exit": curr_price,
-                            "entry_time": pos.get("time", ""), "exit_time": now_str, "exit_date": today_date,
-                            "reason": reason, "net_pnl_pct": final_pct, "net_pnl_ntd": final_ntd
-                        })
-                        alerts.append(
-                            f"⏱️【時間停損清倉換股】*{pos['code']} {pos['name']}*\n"
-                            f"• 持倉逾 {days_held} 日動能停滯｜進場：`{entry_p}` ➔ 清倉：`{curr_price}`\n"
-                            f"• 實質淨損益：`{final_pct:+.2f}%`（`{final_ntd:+,} 元`）"
-                        )
-                        del active[tk]
-                except Exception:
-                    pass
     except Exception as e:
         print(f"⚠️ 持倉更新檢查異常: {e}")
 
@@ -483,6 +558,7 @@ def run_intraday_daemon():
     print(f"🚀 啟動盤中即時監控引擎：{now_tw().strftime('%Y-%m-%d %H:%M:%S')}")
     candidates = fetch_all_market_candidates()
     ticker_list = list(candidates.keys())
+    daily_batch = fetch_daily_universe(ticker_list)
     state = load_portfolio()
     notified_today = set(state["active"].keys())
 
@@ -520,11 +596,11 @@ def run_intraday_daemon():
             if not batch:
                 continue
             try:
-                batch_data = yf.download(batch, period="1mo", interval="30m", group_by="ticker", threads=True, progress=False)
+                batch_data = yf.download(batch, period="60d", interval="30m", group_by="ticker", threads=True, progress=False)
                 for tk in batch:
                     info = candidates[tk]
-                    df_tk = batch_data[tk] if len(batch) > 1 and tk in batch_data else batch_data
-                    res = evaluate_signal(df_tk, tk, info["name"], info["kind"], mode="intraday")
+                    df_tk = extract_ticker_df(batch_data, tk)
+                    res = evaluate_signal(df_tk, tk, info["name"], info["kind"], mode="intraday", daily_df=extract_ticker_df(daily_batch, tk) if daily_batch is not None else None)
                     if res:
                         new_entries.append(res)
                         notified_today.add(tk)
@@ -569,6 +645,7 @@ def run_eod_report():
 
     candidates = fetch_all_market_candidates()
     ticker_list = list(candidates.keys())
+    daily_batch = fetch_daily_universe(ticker_list)
     state = load_portfolio()
 
     # 1. 先結算既有持倉今日收盤狀態與觸發清倉紀錄
@@ -579,11 +656,11 @@ def run_eod_report():
     for i in range(0, len(ticker_list), BATCH_SIZE):
         batch = ticker_list[i:i + BATCH_SIZE]
         try:
-            batch_data = yf.download(batch, period="1mo", interval="30m", group_by="ticker", threads=True, progress=False)
+            batch_data = yf.download(batch, period="60d", interval="30m", group_by="ticker", threads=True, progress=False)
             for tk in batch:
                 info = candidates[tk]
-                df_tk = batch_data[tk] if len(batch) > 1 and tk in batch_data else batch_data
-                res = evaluate_signal(df_tk, tk, info["name"], info["kind"], mode="eod")
+                df_tk = extract_ticker_df(batch_data, tk)
+                res = evaluate_signal(df_tk, tk, info["name"], info["kind"], mode="eod", daily_df=extract_ticker_df(daily_batch, tk) if daily_batch is not None else None)
                 if res:
                     if res["kind"] == "ETF":
                         etf_matches.append(res)

@@ -323,6 +323,24 @@
       "total_pnl_ntd": -1114,
       "total_pnl_pct": -0.56,
       "time": "2026-10-28 09:33"
+    },
+    "00900.TW": {
+      "code": "00900",
+      "name": "富邦特選高股息30",
+      "kind": "ETF",
+      "entry": 20.03,
+      "last_price": 20.03,
+      "stop": 19.69,
+      "tp1": 20.73,
+      "tp2": 21.63,
+      "tp1_hit": false,
+      "remain_ratio": 1.0,
+      "capital": 200000,
+      "realized_pnl_ntd": 0,
+      "unrealized_ntd": 0,
+      "total_pnl_ntd": 0,
+      "total_pnl_pct": 0.0,
+      "time": "2026-10-28 09:37"
     }
   },
   "closed_history": [

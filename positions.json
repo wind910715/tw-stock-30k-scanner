@@ -287,6 +287,24 @@
       "total_pnl_ntd": -968,
       "total_pnl_pct": -0.48,
       "time": "2026-10-28 09:44"
+    },
+    "2352.TW": {
+      "code": "2352",
+      "name": "佳世達",
+      "kind": "STOCK",
+      "entry": 30.05,
+      "last_price": 30.05,
+      "stop": 29.06,
+      "tp1": 31.83,
+      "tp2": 33.51,
+      "tp1_hit": false,
+      "remain_ratio": 1.0,
+      "capital": 200000,
+      "realized_pnl_ntd": 0,
+      "unrealized_ntd": 0,
+      "total_pnl_ntd": 0,
+      "total_pnl_pct": 0.0,
+      "time": "2026-10-28 10:05"
     }
   },
   "closed_history": [

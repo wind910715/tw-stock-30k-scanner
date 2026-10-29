@@ -287,6 +287,42 @@
       "total_pnl_ntd": -1586,
       "total_pnl_pct": -0.79,
       "time": "2026-10-28 13:31"
+    },
+    "00938.TW": {
+      "code": "00938",
+      "name": "凱基優選30",
+      "kind": "ETF",
+      "entry": 27.71,
+      "last_price": 27.71,
+      "stop": 27.26,
+      "tp1": 28.68,
+      "tp2": 29.93,
+      "tp1_hit": false,
+      "remain_ratio": 1.0,
+      "capital": 200000,
+      "realized_pnl_ntd": 0,
+      "unrealized_ntd": 0,
+      "total_pnl_ntd": 0,
+      "total_pnl_pct": 0.0,
+      "time": "2026-10-29 09:32"
+    },
+    "3293.TWO": {
+      "code": "3293",
+      "name": "鈊象",
+      "kind": "STOCK",
+      "entry": 802.0,
+      "last_price": 802.0,
+      "stop": 782.5,
+      "tp1": 837.1,
+      "tp2": 870.25,
+      "tp1_hit": false,
+      "remain_ratio": 1.0,
+      "capital": 200000,
+      "realized_pnl_ntd": 0,
+      "unrealized_ntd": 0,
+      "total_pnl_ntd": 0,
+      "total_pnl_pct": 0.0,
+      "time": "2026-10-29 09:32"
     }
   },
   "closed_history": [

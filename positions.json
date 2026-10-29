@@ -305,6 +305,24 @@
       "total_pnl_ntd": 198,
       "total_pnl_pct": 0.1,
       "time": "2026-10-29 09:32"
+    },
+    "2891.TW": {
+      "code": "2891",
+      "name": "中信金",
+      "kind": "STOCK",
+      "entry": 75.7,
+      "last_price": 75.7,
+      "stop": 73.57,
+      "tp1": 79.53,
+      "tp2": 83.15,
+      "tp1_hit": false,
+      "remain_ratio": 1.0,
+      "capital": 200000,
+      "realized_pnl_ntd": 0,
+      "unrealized_ntd": 0,
+      "total_pnl_ntd": 0,
+      "total_pnl_pct": 0.0,
+      "time": "2026-10-29 09:35"
     }
   },
   "closed_history": [

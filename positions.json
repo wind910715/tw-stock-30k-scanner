@@ -287,6 +287,24 @@
       "total_pnl_ntd": -272,
       "total_pnl_pct": -0.14,
       "time": "2026-10-29 09:35"
+    },
+    "2887.TW": {
+      "code": "2887",
+      "name": "台新新光金",
+      "kind": "STOCK",
+      "entry": 42.7,
+      "last_price": 42.7,
+      "stop": 41.8,
+      "tp1": 44.32,
+      "tp2": 46.12,
+      "tp1_hit": false,
+      "remain_ratio": 1.0,
+      "capital": 200000,
+      "realized_pnl_ntd": 0,
+      "unrealized_ntd": 0,
+      "total_pnl_ntd": 0,
+      "total_pnl_pct": 0.0,
+      "time": "2026-10-29 09:42"
     }
   },
   "closed_history": [

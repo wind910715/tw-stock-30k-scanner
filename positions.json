@@ -23,7 +23,7 @@
       "name": "統一台灣高息動能",
       "kind": "ETF",
       "entry": 25.46,
-      "last_price": 25.25,
+      "last_price": 25.26,
       "stop": 24.88,
       "tp1": 26.5,
       "tp2": 27.5,
@@ -31,9 +31,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": -2450,
-      "total_pnl_ntd": -2450,
-      "total_pnl_pct": -1.23,
+      "unrealized_ntd": -2371,
+      "total_pnl_ntd": -2371,
+      "total_pnl_pct": -1.19,
       "time": "2026-10-28 09:33"
     },
     "2603.TW": {
@@ -41,7 +41,7 @@
       "name": "長榮",
       "kind": "STOCK",
       "entry": 268.5,
-      "last_price": 270.0,
+      "last_price": 271.0,
       "stop": 259.53,
       "tp1": 284.65,
       "tp2": 299.9,
@@ -49,9 +49,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": 317,
-      "total_pnl_ntd": 317,
-      "total_pnl_pct": 0.16,
+      "unrealized_ntd": 1062,
+      "total_pnl_ntd": 1062,
+      "total_pnl_pct": 0.53,
       "time": "2026-10-30 10:18"
     },
     "2834.TW": {
@@ -59,7 +59,7 @@
       "name": "臺企銀",
       "kind": "STOCK",
       "entry": 18.1,
-      "last_price": 18.1,
+      "last_price": 18.05,
       "stop": 17.83,
       "tp1": 18.73,
       "tp2": 19.55,
@@ -67,10 +67,28 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
+      "unrealized_ntd": -1352,
+      "total_pnl_ntd": -1352,
+      "total_pnl_pct": -0.68,
+      "time": "2026-10-30 13:06"
+    },
+    "00701.TW": {
+      "code": "00701",
+      "name": "國泰股利精選30",
+      "kind": "ETF",
+      "entry": 42.9,
+      "last_price": 42.9,
+      "stop": 42.2,
+      "tp1": 44.4,
+      "tp2": 46.33,
+      "tp1_hit": false,
+      "remain_ratio": 1.0,
+      "capital": 200000,
+      "realized_pnl_ntd": 0,
       "unrealized_ntd": 0,
       "total_pnl_ntd": 0,
       "total_pnl_pct": 0.0,
-      "time": "2026-10-30 13:06"
+      "time": "2026-10-30 13:12"
     }
   },
   "closed_history": [

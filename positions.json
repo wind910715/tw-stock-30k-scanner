@@ -23,7 +23,7 @@
       "name": "統一台灣高息動能",
       "kind": "ETF",
       "entry": 25.46,
-      "last_price": 24.97,
+      "last_price": 24.99,
       "stop": 24.88,
       "tp1": 26.5,
       "tp2": 27.5,
@@ -31,9 +31,9 @@
       "remain_ratio": 1.0,
       "capital": 200000,
       "realized_pnl_ntd": 0,
-      "unrealized_ntd": -4649,
-      "total_pnl_ntd": -4649,
-      "total_pnl_pct": -2.32,
+      "unrealized_ntd": -4492,
+      "total_pnl_ntd": -4492,
+      "total_pnl_pct": -2.25,
       "time": "2026-10-28 09:33"
     },
     "2886.TW": {
@@ -53,24 +53,6 @@
       "total_pnl_ntd": -1897,
       "total_pnl_pct": -0.95,
       "time": "2026-10-29 11:04"
-    },
-    "2801.TW": {
-      "code": "2801",
-      "name": "彰銀",
-      "kind": "STOCK",
-      "entry": 30.5,
-      "last_price": 30.25,
-      "stop": 29.56,
-      "tp1": 32.19,
-      "tp2": 33.79,
-      "tp1_hit": false,
-      "remain_ratio": 1.0,
-      "capital": 200000,
-      "realized_pnl_ntd": 0,
-      "unrealized_ntd": -2439,
-      "total_pnl_ntd": -2439,
-      "total_pnl_pct": -1.22,
-      "time": "2026-10-29 17:33"
     },
     "00668.TW": {
       "code": "00668",
@@ -676,6 +658,19 @@
       "reason": "⚠️30K死叉破20MA清倉",
       "net_pnl_pct": -2.35,
       "net_pnl_ntd": -4702
+    },
+    {
+      "ticker": "2801.TW",
+      "code": "2801",
+      "name": "彰銀",
+      "entry": 30.5,
+      "exit": 30.2,
+      "entry_time": "2026-10-29 17:33",
+      "exit_time": "2026-10-30 09:35",
+      "exit_date": "2026-10-30",
+      "reason": "⚠️30K死叉破20MA清倉",
+      "net_pnl_pct": -1.38,
+      "net_pnl_ntd": -2767
     }
   ]
 }

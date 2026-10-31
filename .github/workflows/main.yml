@@ -1,13 +1,7 @@
 name: TW Stock 30K Intraday Monitor & 1700 EOD & Weekly Review
 
 on:
-  schedule:
-    # 1. 週一至週五 08:25 (台灣時間) 啟動盤中即時監控至 13:40
-    - cron: '25 0 * * 1-5'
-    # 2. 週一至週五 16:55 (台灣時間) 啟動 17:00 盤後選股與持倉損益日報
-    - cron: '55 8 * * 1-5'
-    # 3. 每週五 17:55 (台灣時間) 啟動 18:00 當週進出績效總體檢週報
-    - cron: '55 9 * * 5'
+  # 封存：2026-10-31 起停用排程（死叉修正測試未通過），僅保留手動觸發；要復活再把 schedule 加回來
   workflow_dispatch:
     inputs:
       run_mode:
